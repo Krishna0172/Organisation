@@ -1,5 +1,5 @@
 const client = require('../config/connection');
-const { getUserByIdQuery } = require('../queries/queries');
+const { getUserByIdQuery ,checkOtherTableQuery} = require('../queries/queries');
 
 const getOrg = async (req, res) => {
   try {
@@ -7,7 +7,7 @@ const getOrg = async (req, res) => {
 
     const sortOrder = sort === 'desc' ? 'DESC' : 'ASC';
     let sortCol = column_name ? column_name : 'org_id';
-    limit = limit ? limit : 50;
+    limit = limit ? limit : 9999;
 
     const query = `SELECT org_id, org_name, adslastsyncat, inventorylastsyncat, orderslastsyncat, paymentslastsyncat, returnslastsyncat, subscriptionenddate, CAST(ROUND(
       CASE
@@ -59,32 +59,7 @@ const get_org_detailBy_Id = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const checkOtherTableQuery = `
-    SELECT
-      o.orgid,
-      o.channel,
-      o.isdisabled,
-      o.isdisconnected,
-      o.updatedat,
-      o.email_campaign_module,
-      o.review_module,
-      o.buybox_module,
-      o.keyword_module,
-      o.pricing_module,
-      o.ppr_module,
-      o.modularity,
-      o.inventory_module,
-      u.adslastsyncat,
-      u.inventorylastsyncat,
-      u.orderslastsyncat,
-      u.paymentslastsyncat,
-      u.returnslastsyncat
-    FROM
-      public.organisation AS u
-    JOIN
-      public."fs-organisations-channels-db" AS o ON o.orgid = u.org_id
-    WHERE
-      o.orgid = $1;`;
+
 
     const otherTableResult = await client.query(checkOtherTableQuery, [id]);
 
