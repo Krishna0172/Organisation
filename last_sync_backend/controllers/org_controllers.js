@@ -3,12 +3,15 @@ const { getUserByIdQuery ,checkOtherTableQuery} = require('../queries/queries');
 
 const getOrg = async (req, res) => {
   try {
-    let { sort, column_name, limit } = req.query;
+    let { sort, column_name, limit, page } = req.query;
 
     const sortOrder = sort === 'desc' ? 'DESC' : 'ASC';
     let sortCol = column_name ? column_name : 'org_id';
-    limit = limit ? limit : 9999;
+    limit = limit ? limit : 25;
+    page = page ? page : 1
 
+    const offset = (page - 1) * limit;
+    console.log(page)
     const query = `SELECT org_id, org_name, adslastsyncat, inventorylastsyncat, orderslastsyncat, paymentslastsyncat, returnslastsyncat, subscriptionenddate, CAST(ROUND(
       CASE
         WHEN subscriptionenddate < CURRENT_DATE THEN
@@ -18,7 +21,8 @@ const getOrg = async (req, res) => {
       END
     )
     AS INTEGER
-  ) AS days_expired FROM public.organisation ORDER BY ${sortCol} ${sortOrder} LIMIT ${limit};`;
+  ) AS days_expired FROM public.organisation ORDER BY ${sortCol} ${sortOrder} LIMIT ${limit} OFFSET
+  ${offset} ;`;
 
     const result = await client.query(query);
     res.send(result.rows);
