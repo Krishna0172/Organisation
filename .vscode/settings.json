@@ -1,15 +1,20 @@
 {
     "cSpell.words": [
         "adslastsyncat",
+        "buybox",
         "citus",
         "fsdbpwbi",
         "fspostgresprod",
         "ILIKE",
         "inventorylastsyncat",
+        "isdisconnected",
         "orderslastsyncat",
         "organisation",
+        "organisations",
+        "orgid",
         "paymentslastsyncat",
         "powerbipostgresreadonly",
-        "returnslastsyncat"
+        "returnslastsyncat",
+        "updatedat"
     ]
 }

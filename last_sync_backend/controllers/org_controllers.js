@@ -7,11 +7,18 @@ const getOrg = async (req, res) => {
 
     const sortOrder = sort === 'desc' ? 'DESC' : 'ASC';
     let sortCol = column_name ? column_name : 'org_id';
-    limit = limit ? limit : 500;
+    limit = limit ? limit : 50;
 
-    const query = `
-      SELECT org_id, org_name, adslastsyncat, inventorylastsyncat, orderslastsyncat, paymentslastsyncat, returnslastsyncat
-      FROM public.organisation ORDER BY ${sortCol} ${sortOrder} LIMIT ${limit}`;
+    const query = `SELECT org_id, org_name, adslastsyncat, inventorylastsyncat, orderslastsyncat, paymentslastsyncat, returnslastsyncat, subscriptionenddate, CAST(ROUND(
+      CASE
+        WHEN subscriptionenddate < CURRENT_DATE THEN
+          EXTRACT(EPOCH FROM (CURRENT_DATE - subscriptionenddate)) / (24 * 60 * 60)
+        ELSE
+          0
+      END
+    )
+    AS INTEGER
+  ) AS days_expired FROM public.organisation ORDER BY ${sortCol} ${sortOrder} LIMIT ${limit};`;
 
     const result = await client.query(query);
     res.send(result.rows);
@@ -48,9 +55,48 @@ const getOrgById = async (req, res) => {
 };
 
 
+const get_org_detailBy_Id = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const checkOtherTableQuery = `
+    SELECT
+      o.orgid,
+      o.channel,
+      o.isdisabled,
+      o.isdisconnected,
+      o.updatedat,
+      o.email_campaign_module,
+      o.review_module,
+      o.buybox_module,
+      o.keyword_module,
+      o.pricing_module,
+      o.ppr_module,
+      o.modularity,
+      o.inventory_module,
+      u.adslastsyncat,
+      u.inventorylastsyncat,
+      u.orderslastsyncat,
+      u.paymentslastsyncat,
+      u.returnslastsyncat
+    FROM
+      public.organisation AS u
+    JOIN
+      public."fs-organisations-channels-db" AS o ON o.orgid = u.org_id
+    WHERE
+      o.orgid = $1;`;
+
+    const otherTableResult = await client.query(checkOtherTableQuery, [id]);
+
+    res.send(otherTableResult.rows[0] );
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error...');
+  }
+};
 
 module.exports = {
   getOrg,
   getOrgById,
+  get_org_detailBy_Id
 };

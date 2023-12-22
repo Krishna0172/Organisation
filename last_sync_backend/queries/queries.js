@@ -1,5 +1,5 @@
 
-const getAllUsersQuery = 'SELECT org_id, org_name, adslastsyncat, ... FROM public.organisation LIMIT 100';
+// const getAllUsersQuery = 'SELECT org_id, org_name, adslastsyncat, ... FROM public.organisation LIMIT 100';
 
 const getUserByIdQuery = (org_id, org_name) => `
   SELECT org_id, org_name, adslastsyncat, ...
@@ -9,5 +9,5 @@ const getUserByIdQuery = (org_id, org_name) => `
 
 module.exports = {
   getUserByIdQuery,
-  getAllUsersQuery,
+  // getAllUsersQuery,
 };
