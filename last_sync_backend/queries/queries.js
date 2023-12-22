@@ -34,6 +34,8 @@ const checkOtherTableQuery = `
     WHERE
       o.orgid = $1;`;
 
+
+
 module.exports = {
   getUserByIdQuery,
   checkOtherTableQuery

@@ -11,7 +11,7 @@ const getOrg = async (req, res) => {
     page = page ? page : 1
 
     const offset = (page - 1) * limit;
-    console.log(page)
+    console.log(page )
     const query = `SELECT org_id, org_name, adslastsyncat, inventorylastsyncat, orderslastsyncat, paymentslastsyncat, returnslastsyncat, subscriptionenddate, CAST(ROUND(
       CASE
         WHEN subscriptionenddate < CURRENT_DATE THEN
