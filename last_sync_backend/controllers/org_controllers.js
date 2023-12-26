@@ -1,17 +1,16 @@
 const client = require('../config/connection');
-const { getUserByIdQuery ,checkOtherTableQuery} = require('../queries/queries');
+const { getUserByIdQuery ,checkOtherTableQuery, counts} = require('../queries/queries');
 
 const getOrg = async (req, res) => {
   try {
     let { sort, column_name, limit, page } = req.query;
-
     const sortOrder = sort === 'desc' ? 'DESC' : 'ASC';
     let sortCol = column_name ? column_name : 'org_id';
     limit = limit ? limit : 25;
     page = page ? page : 1
 
     const offset = (page - 1) * limit;
-    console.log(page )
+    // console.log(page )
     const query = `SELECT org_id, org_name, adslastsyncat, inventorylastsyncat, orderslastsyncat, paymentslastsyncat, returnslastsyncat, subscriptionenddate, CAST(ROUND(
       CASE
         WHEN subscriptionenddate < CURRENT_DATE THEN
@@ -60,11 +59,9 @@ const getOrgById = async (req, res) => {
 
 
 const get_org_detailBy_Id = async (req, res) => {
+
   try {
     const { id } = req.params;
-
-
-
     const otherTableResult = await client.query(checkOtherTableQuery, [id]);
 
     res.send(otherTableResult.rows[0] );
@@ -74,8 +71,24 @@ const get_org_detailBy_Id = async (req, res) => {
   }
 };
 
+
+
+const get_counts = async(req,res)=>{
+  try {
+    const {id} = req.params;
+    const otherTableResult = await client.query(counts,[id]);
+    res.send(otherTableResult.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Internal Server Error...');
+  }
+}
+
+
+
 module.exports = {
   getOrg,
   getOrgById,
-  get_org_detailBy_Id
+  get_org_detailBy_Id,
+  get_counts
 };

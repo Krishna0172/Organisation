@@ -5,6 +5,7 @@
         "citus",
         "fsdbpwbi",
         "fspostgresprod",
+        "grrd",
         "ILIKE",
         "inventorylastsyncat",
         "isdisconnected",
